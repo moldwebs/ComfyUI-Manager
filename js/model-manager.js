@@ -273,6 +273,7 @@ export class ModelManager {
 												let filename = _item.match(/([^\/]+)(?=\.\w+$)/)[0];
 												if (grid.highlightKeywordsFilter(rowItem, searchableColumns, filename)) {
 													rowItem.in_workflow = "True";
+													grid.highlightKeywordsFilter(rowItem, searchableColumns, "");
 												}
 											}
 										});
