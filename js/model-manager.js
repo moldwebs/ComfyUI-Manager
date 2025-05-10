@@ -263,13 +263,19 @@ export class ModelManager {
 
 				if (shouldShown) {
 					if(this.filter) {
-						app.graph._nodes.forEach((item, i) => {
-							item.widgets_values.forEach((_item, i) => {
-								if (models_extensions.includes("." + _item.toString().split('.').pop())) {
-									rowItem.in_workflow = grid.highlightKeywordsFilter(rowItem, searchableColumns, _item.match(/([^\/]+)(?=\.\w+$)/)[0]) ? "True" : "False";
-								}
-							});
-						});
+						if (this.filter == "in_workflow") {
+							if (Array.isArray(app.graph._nodes)) {
+								app.graph._nodes.forEach((item, i) => {
+									if (Array.isArray(item.widgets_values)) {
+										item.widgets_values.forEach((_item, i) => {
+											if (_item !== null && models_extensions.includes("." + _item.toString().split('.').pop())) {
+												rowItem.in_workflow = grid.highlightKeywordsFilter(rowItem, searchableColumns, _item.match(/([^\/]+)(?=\.\w+$)/)[0]) ? "True" : "False";
+											}
+										});
+									}
+								});
+							}
+						}
 						return ((this.filter == "installed" && rowItem.installed == "True") || (this.filter == "not_installed" && rowItem.installed == "False") || (this.filter == "in_workflow" && rowItem.in_workflow == "True"));
 					}
 
