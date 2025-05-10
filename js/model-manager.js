@@ -264,12 +264,16 @@ export class ModelManager {
 				if (shouldShown) {
 					if(this.filter) {
 						if (this.filter == "in_workflow") {
+							rowItem.in_workflow = null;
 							if (Array.isArray(app.graph._nodes)) {
 								app.graph._nodes.forEach((item, i) => {
 									if (Array.isArray(item.widgets_values)) {
 										item.widgets_values.forEach((_item, i) => {
-											if (_item !== null && models_extensions.includes("." + _item.toString().split('.').pop())) {
-												rowItem.in_workflow = grid.highlightKeywordsFilter(rowItem, searchableColumns, _item.match(/([^\/]+)(?=\.\w+$)/)[0]) ? "True" : "False";
+											if (rowItem.in_workflow === null && _item !== null && models_extensions.includes("." + _item.toString().split('.').pop())) {
+												let filename = _item.match(/([^\/]+)(?=\.\w+$)/)[0];
+												if (grid.highlightKeywordsFilter(rowItem, searchableColumns, filename)) {
+													rowItem.in_workflow = "True";
+												}
 											}
 										});
 									}
