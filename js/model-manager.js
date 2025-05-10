@@ -81,10 +81,13 @@ export class ModelManager {
 			value: ""
 		}, {
 			label: "Installed",
-			value: "True"
+			value: "installed"
 		}, {
 			label: "Not Installed",
-			value: "False"
+			value: "not_installed"
+		}, {
+			label: "In Workflow",
+			value: "in_workflow"
 		}];
 
 		this.typeList = [{
@@ -254,12 +257,20 @@ export class ModelManager {
 			rowFilter: (rowItem) => {
 
 				const searchableColumns = ["name", "type", "base", "description", "filename", "save_path"];
+				const models_extensions = ['.ckpt', '.pt', '.pt2', '.bin', '.pth', '.safetensors', '.pkl', '.sft'];
 
 				let shouldShown = grid.highlightKeywordsFilter(rowItem, searchableColumns, this.keywords);
 
 				if (shouldShown) {
-					if(this.filter && rowItem.installed !== this.filter) {
-						return false;
+					if(this.filter) {
+						app.graph._nodes.forEach((item, i) => {
+							item.widgets_values.forEach((_item, i) => {
+								if (models_extensions.includes("." + _item.toString().split('.').pop())) {
+									rowItem.in_workflow = grid.highlightKeywordsFilter(rowItem, searchableColumns, _item.match(/([^\/]+)(?=\.\w+$)/)[0]) ? "True" : "False";
+								}
+							});
+						});
+						return ((this.filter == "installed" && rowItem.installed == "True") || (this.filter == "not_installed" && rowItem.installed == "False") || (this.filter == "in_workflow" && rowItem.in_workflow == "True"));
 					}
 
 					if(this.type && rowItem.type !== this.type) {
